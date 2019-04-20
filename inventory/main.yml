@@ -1,0 +1,30 @@
+---
+k8s:
+  hosts:
+    k8s-master1:
+      ansible_host: 192.168.83.101
+    k8s-worker1:
+      ansible_host: 192.168.83.201
+    k8s-worker2:
+      ansible_host: 192.168.83.202
+
+  children:
+    k8s_masters:
+      hosts:
+        k8s-master1:
+      vars:
+        kubernetes_apiserver_advertise_address: "{{ ansible_all_ipv4_addresses[1] }}"
+    k8s_workers:
+      hosts:
+        k8s-worker1:
+        k8s-worker2:
+
+vagrant:
+  children:
+    k8s:
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    ansible_user: vagrant
+    #ansible_ssh_pass: vagrant
+    ansible_become_pass: vagrant
+    ansible_ssh_private_key_file: ".vagrant/machines/{{ inventory_hostname }}/virtualbox/private_key"

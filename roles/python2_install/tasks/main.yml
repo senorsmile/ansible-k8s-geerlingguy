@@ -1,0 +1,44 @@
+---
+####
+# This task install python 2.7 on nodes that no longer ship with python 2.
+#   e.g. Ubuntu 16.04+ now ships with python3 by default.
+####
+- name: Verify ssh working
+  raw: hostname; uptime
+  register: hostname_uptime
+  changed_when: False
+
+- name: Install Python2 | Verify sudo access working
+  become: True
+  raw: uptime
+  changed_when: False
+
+- name: Install Python2 | Apt install python 2 (Ubuntu, Debian)
+  become: True
+  raw: >
+    test -e /usr/bin/apt-get
+    && ( test -e /usr/bin/python 
+    || (apt-get -y update && apt-get install -y python-minimal) )
+    || exit 0
+  register: raw_install_python2
+  changed_when: ( "Setting up python" in raw_install_python2.stdout )
+
+- name: Install Python2 | Apk install python 2 (Alpine Linux)
+  become: True
+  raw: >
+    test -e /sbin/apk
+    && ( test -e /usr/bin/python
+    || (apk add --no-progress python) )
+    || exit 0
+  register: raw_apk_add_python2
+  changed_when: ( "Executing busybox" in raw_apk_add_python2.stdout )
+
+- name: Install Python2 | Pacman install python 2 (ArchLinux)
+  become: True
+  raw: >
+    test -e /usr/bin/pacman
+    && ( test -e /usr/bin/python2
+    || (pacman -Sy --needed --noconfirm --color=never python2) )
+    || exit 0
+  register: raw_pacman_add_python2
+  changed_when: ( "installing python2" in raw_pacman_add_python2.stdout )

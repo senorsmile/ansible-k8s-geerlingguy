@@ -1,0 +1,29 @@
+---
+- hosts: k8s
+  gather_facts: False
+  become: True
+  roles: 
+    - role: python2_install
+      tags: python2_install
+
+- hosts: k8s
+  gather_facts: True
+  become: True
+  roles: 
+    #- role: k8s_install
+    #  tags: k8s_install
+
+    - role: geerlingguy.docker
+      tags: docker
+
+    - role: geerlingguy.kubernetes
+      tags: kubernetes
+
+  post_tasks:
+    - name: Get admin.conf locally
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: '~/.geerlingguy.k8s.admin.conf'
+        flat: True
+      tags: admin_conf
+      when: ( 'k8s_masters' in group_names ) 
