@@ -8,7 +8,7 @@ Ansible site to deploy kubernetes to vagrant using geerlingguy's k8s role
 # usage
 check out this repo
 
-`git clone https://github.com/senorsmile/ansible-k8s-geerlingguy.git```
+`git clone https://github.com/senorsmile/ansible-k8s-geerlingguy.git`
 
 
 make sure to update submodules
